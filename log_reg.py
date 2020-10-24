@@ -4,10 +4,14 @@ from matplotlib import pyplot as plt
 
 def read_and_process(filepath, delim=","):
     data = pd.read_csv(filepath, delimiter=delim)
+    # min-max normalization
     data = (data - data.min())/(data.max()-data.min())
+    # if label == 0, label = -1
     data.loc[data["label"] == 0, "label"] = -1
+    # add column of 1s
     data["bias"] = 1
     
+    # Multiply features by -1 if label == -1
     z = data[["bias", "exam1", "exam2"]].multiply(data["label"], axis="index")
     z = z.values
     
@@ -29,12 +33,16 @@ def cost(x):
 
 def gradient_descent(Z, alpha=0.01, gamma=0.5, iters=100):
     m = Z.shape[0]
+    # Initially v and beta are equal. v_0 == beta_0
     v = np.ones((1, Z.shape[1]))
     betas = np.ones((1, Z.shape[1]))
     costs = []
     
     for _ in range(iters):
-        g = sigmoid(-np.matmul(Z, v.T))
+    # Uncomment sigmoid and comment next line for sigmoid
+    
+		# g = sigmoid(-np.matmul(Z, v.T))
+        g = g7(np.matmul(Z, v.T))
         betas_new = v + alpha * np.matmul(g.T, Z)
         v = (1-gamma)*betas_new + gamma*betas
         betas = betas_new
